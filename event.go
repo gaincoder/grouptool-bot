@@ -17,3 +17,8 @@ func (e Event) Url() string {
 	url := os.Getenv("PORTAL_URL") + "/event/view/" + e.Id
 	return url
 }
+
+func (e Event) PortalUrl() string {
+	url := os.Getenv("PORTAL_URL")
+	return url
+}

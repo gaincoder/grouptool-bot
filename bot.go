@@ -60,6 +60,27 @@ func (bot *Bot) upcommingEventsHandler(m *tb.Message) {
 	bot.api.Send(m.Chat, emoji.Parse(tpl.String()))
 }
 
+func (bot *Bot) upcommingEventsCronjobHandler() {
+
+	events := []Event{}
+
+	events = bot.db.nextThreeEvents()
+
+	var tmpl *template.Template
+	var tpl bytes.Buffer
+	if len(events) > 0 {
+		tmpl = template.Must(template.ParseFiles("templates/upcomming_events.tpl"))
+		tmpl.Execute(&tpl, events)
+	} else {
+		tmpl = template.Must(template.ParseFiles("templates/no_upcomming_events.tpl"))
+		tmpl.Execute(&tpl, os.Getenv("PORTAL_URL"))
+	}
+
+	text := tpl.String()
+	emojiText := emoji.Parse(text)
+	bot.ApiInput(emojiText)
+}
+
 func (bot *Bot) upcommingInternalEventsHandler(m *tb.Message) {
 
 	events := []Event{}
@@ -114,5 +135,8 @@ func (bot *Bot) ApiInput(input string) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	bot.api.Send(chat, input)
+	_, error := bot.api.Send(chat, input)
+	if error != nil {
+		fmt.Println(error.Error())
+	}
 }

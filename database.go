@@ -26,6 +26,32 @@ func (database Database) close() {
 	database.db.Close()
 }
 
+func (database Database) nextThreeEvents() []Event {
+
+	res, err := database.db.Query("SELECT id,name,location,date,public FROM `event` WHERE `date` >= NOW() AND deleted_at IS NULL ORDER BY date LIMIT 3")
+	defer res.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	events := []Event{}
+
+	for res.Next() {
+
+		var event Event
+		err := res.Scan(&event.Id, &event.Name, &event.Location, &event.Date, &event.Public)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		events = append(events, event)
+
+	}
+	return events
+}
+
 func (database Database) nextFiveEvents() []Event {
 
 	res, err := database.db.Query("SELECT id,name,location,date,public FROM `event` WHERE `date` >= NOW() AND deleted_at IS NULL ORDER BY date LIMIT 5")
