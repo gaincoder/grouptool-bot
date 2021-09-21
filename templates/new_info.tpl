@@ -1,0 +1,1 @@
+{{.User.Name}} hat eine neue Info erstellt: <b>{{ .Info.Headline }}</b> <a href="{{.Info.Url}}">Infos ansehen</a>

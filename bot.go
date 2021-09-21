@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"os"
 	"text/template"
@@ -41,8 +42,7 @@ func createBot(db *Database) *Bot {
 	b.Handle("/msg", bot.messageHandler)
 	b.Handle("/portal", bot.portalHandler)
 	b.Handle("/hilfe", bot.helpHandler)
-
-	b.Start()
+	b.Handle("/chatid", bot.getChatId)
 
 	return bot
 
@@ -96,7 +96,23 @@ func (bot *Bot) portalHandler(m *tb.Message) {
 	bot.api.Send(m.Chat, os.Getenv("PORTAL_URL"))
 }
 
+func (bot *Bot) getChatId(m *tb.Message) {
+	chatId := fmt.Sprintf("%d", m.Chat.ID)
+	bot.api.Send(m.Chat, chatId)
+}
+
 func (bot *Bot) messageHandler(m *tb.Message) {
-	group := &tb.Chat{ID: -1001095390251}
+	group, err := bot.api.ChatByID(os.Getenv("TARGET_CHAT_ID"))
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	bot.api.Send(group, emoji.Parse(m.Payload))
+}
+
+func (bot *Bot) ApiInput(input string) {
+	chat, err := bot.api.ChatByID(os.Getenv("TARGET_CHAT_ID"))
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	bot.api.Send(chat, input)
 }
