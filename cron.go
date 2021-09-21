@@ -66,7 +66,7 @@ func cronInit(bot *Bot, db *Database) {
 	c := cron.New()
 	c.AddFunc("0 0 7 * *", crontasks.checkBirthdayToday)
 	c.AddFunc("0 0 15 * *", crontasks.checkBirthdayInTwoWeeks)
-	c.AddFunc("0 * * * *", bot.upcommingEventsCronjobHandler)
+	c.AddFunc("0 0 14 * * SUN", bot.upcommingEventsCronjobHandler)
 	go c.Start()
 
 }
