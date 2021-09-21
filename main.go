@@ -18,10 +18,7 @@ func main() {
 
 	go bot.api.Start()
 
-	// c := cron.New()
-	// c.AddFunc("0 * * * *", func() { bot.ApiInput("minutely cron") })
-
-	// go c.Start()
+	cronInit(bot, database)
 
 	mux := http.NewServeMux()
 
@@ -30,7 +27,7 @@ func main() {
 	mux.Handle("/infoCreated", apiAuth(handleInfoCreated(bot)))
 	mux.Handle("/pollCreated", apiAuth(handlePollCreated(bot)))
 
-	http.ListenAndServe(":8088", mux)
+	http.ListenAndServe("127.0.0.1:8088", mux)
 }
 
 func apiAuth(next http.Handler) http.Handler {
